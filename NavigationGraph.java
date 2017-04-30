@@ -2,11 +2,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NavigationGraph implements GraphADT<Location, Path> {
-
+	//TODO: Implement all methods of GraphADT
 	//List of locations
 	private List<Location> locations = new ArrayList<Location>();
 	
-	//TODO: Implement all methods of GraphADT
+	//List of predecessors associated with each GraphNode in nodes list below
 	private List<GraphNode<Location,Path>> predecessor = new 
 			ArrayList<GraphNode<Location,Path>>();
 	
@@ -24,13 +24,22 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 
 	@Override
 	public void addVertex(Location vertex) {
-		//add new Location to list, use index in list as ID
+		//Check if location exists in list already
+		for (int i=0; i < locations.size(); i++) {
+			if (vertex.equals(locations.get(i))) {
+				return;
+			}
+		}
+		//add new Location to lists, use index in list as ID
 		this.nodes.add(new GraphNode<Location,Path>(vertex, nodes.size()));
+		this.locations.add(vertex);
 	}
 	
 	@Override
 	public void addEdge(Location src, Location dest, Path edge) {
 		for (int i= 0; i < nodes.size(); i++) {
+			
+			//Find source within list of GraphNodes
 			if (nodes.get(i).getVertexData().equals(src)) {
 				
 				//Add out edge to source's edge list
@@ -41,9 +50,6 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	
 	@Override
 	public List<Location> getVertices() {
-		for (int i=0; i < nodes.size(); i++) {
-			locations.add(nodes.get(i).getVertexData());
-		}
 		return locations;
 	}
 	
@@ -78,6 +84,8 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	
 	@Override
 	public List<Location> getNeighbors(Location vertex) {
+		//Returns the locations that this location is connected to
+		//Return the locations within the edge list associated with this location
 		return null;
 	}
 	
