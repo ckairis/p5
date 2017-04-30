@@ -182,31 +182,43 @@ public class MapApp {
 		File file = new File(graphFilepath);
 		Scanner scnr = new Scanner(file);
 		
-		String ditch = scnr.nextLine();
+		String first = scnr.nextLine();
 		
 		//Parse out EdgeProperties for constructing NavGraph instance
-		String[] boi = ditch.split(" ");
+		String[] boi = first.split(" ");
 		String[] boi2 = new String[]{boi[2], boi[3]};
 		
 		//Create NavGraph instance
 		NavigationGraph graph = new NavigationGraph(boi2);
 		
+		//Parse remaining lines, create nodes and edges
 		while (scnr.hasNextLine()) {
 			String line = scnr.nextLine();
 			String[] data = line.split(" ");
+			
+			//Create location objects
 			Location source = new Location(data[0]);
 			Location dest = new Location(data[1]);
 			
-			
+			//Get edge properties
 			List<Double> list = new ArrayList<Double>();
 			list.add(Double.parseDouble(data[2]));
 			list.add(Double.parseDouble(data[3]));
 			
-			new Path(source, dest, list);
+			//Create path from source to destination
+			Path temp = new Path(source, dest, list);
+			
+			//Add vertex if location isn't in list already
+			graph.addVertex(source);
+			graph.addVertex(dest);
+			
+			//Add Path to source's list of edges
+			graph.addEdge(source, dest, temp);
 			
 		}
+			scnr.close();
 			return graph;
-
+			
 	}
 
 }
