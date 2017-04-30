@@ -183,8 +183,12 @@ public class MapApp {
 		Scanner scnr = new Scanner(file);
 		
 		String ditch = scnr.nextLine();
+		
+		//Parse out EdgeProperties for constructing NavGraph instance
 		String[] boi = ditch.split(" ");
 		String[] boi2 = new String[]{boi[2], boi[3]};
+		
+		//Create NavGraph instance
 		NavigationGraph graph = new NavigationGraph(boi2);
 		
 		while (scnr.hasNextLine()) {
