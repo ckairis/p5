@@ -102,7 +102,11 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	
 	@Override
 	public String toString() {
-		return null;
+		String out = "";
+		for (int i = 0; i < nodes.size(); i++) {
+			out = out+ nodes.get(i).toString() + "\n";
+		}
+		return out;
 	}
 	/**
 	 * Returns a Location object given its name
