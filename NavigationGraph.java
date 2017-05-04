@@ -8,14 +8,11 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	private List<Location> locations = new ArrayList<Location>();
 	
 	//priority queue for Dijkstra's 
-		private PriorityQueue<DijkstraPQEntry> dpq = new 
-	PriorityQueue<DijkstraPQEntry>();
+		private PriorityQueue<DijkstraPQEntry<Location>> dpq = new 
+	PriorityQueue<DijkstraPQEntry<Location>>();
 		
 		// visited table for Dijkstra's 
 		private boolean[] visited = new boolean[100];
-		
-		//List of edges to reconstruct shortest path
-		private List<Path> route = new ArrayList<Path>();
 		
 		//Weight holder for Dijkstra's
 		private double[] weight = new double[100];
@@ -38,7 +35,7 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 		this.edgePropertyNames = edgePropertyNames;
 	}
 
-	
+
 	public void addVertex(Location vertex) {
 		//Check if location exists in list already
 		for (int i=0; i < locations.size(); i++) {
@@ -51,7 +48,7 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 		this.locations.add(vertex);
 	}
 	
-	
+
 	public void addEdge(Location src, Location dest, Path edge) {
 		for (int i= 0; i < nodes.size(); i++) {
 			
@@ -64,7 +61,7 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 		}
 	}
 	
-	
+
 	public List<Location> getVertices() {
 		return locations;
 	}
@@ -102,10 +99,17 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	public List<Location> getNeighbors(Location vertex) {
 		//Returns the locations that this location is connected to
 		//Return the locations within the edge list associated with this location
-		return null;
+		List<Location> temp = new ArrayList<Location>();
+		for (int i = 0; i < nodes.size(); i++) {
+			GraphNode<Location, Path> node = nodes.get(i);
+			for (int j = 0; j < nodes.get(i).getOutEdges().size(); j++) {
+				temp.add(node.getOutEdges().get(j).getDestination());
+			}
+		}
+		return temp;
 	}
 	
-	
+
 	public List<Path> getShortestRoute(Location src, Location dest,
 			String edgePropertyName) {
 		
@@ -129,20 +133,26 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 				} else{
 					return null;
 				}
+				
+				//Set source's weight to zero
 				weight[srcIndex] = 0;
 				
 				//ANYTHING TO DO WITH DijkstraPQEntry doesn't work
 				//Most likely to do with Comparable implementation
 				//Consistent with piazza
 				
-				DijkstraPQEntry<Location> firstEntry = new DijkstraPQEntry<Location>(weight[srcIndex],src);
+				DijkstraPQEntry<Location> firstEntry = new 
+						DijkstraPQEntry<Location>(weight[srcIndex],src);
 				dpq.add(firstEntry);
 				
+				//CHANGE FROM INSIDE OF WHILE LOOP4
+				DijkstraPQEntry<Location> curr;
 				while(!dpq.isEmpty()){	
-					DijkstraPQEntry<Location> curr;
+					
 					curr = dpq.remove();
+					
 					// curr is not changing for whatever reason
-					System.out.println(curr.getLocation().toString());
+					//System.out.println(curr.getLocation().toString());
 					
 					int currIndex = 0;
 					for (int count = 0; count < locations.size(); count++) {
@@ -150,6 +160,8 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 							currIndex = count;
 						}
 					}
+					
+					//Set current node's index to true
 					visited[currIndex] = true;
 					
 					
@@ -158,9 +170,12 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 					// The list is returning null because our currN isn't in location, so if the location is in there, do something
 					// if its not, then we need to find another successor or end the process
 					GraphNode<Location,Path> currN;
-					if ( locations.indexOf(curr.getLocation()) > 0){
-					currN = nodes.get(locations.indexOf(curr.getLocation()));
+					//if ( locations.indexOf(curr.getLocation()) > 0){
 					
+					currN = nodes.get(currIndex);
+					
+					
+					//Check each successor of the current node
 					for( int i = 0; i < currN.getOutEdges().size(); i++){
 						// Predecessor list
 						Path childPath = currN.getOutEdges().get(i);//get Child Path
@@ -180,40 +195,48 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 							// tempWeight is the potential new weight that needs to be compared to the old weight
 							double tempWeight = successor.getWeight() + curr.getWeight();
 							// if the new weight is less then the old weight, update the weight
-							if (tempWeight <= successor.getWeight()){ 
+						
+							
+							
+							if (tempWeight <= weight[childID]){ 
 								successor.setWeight(tempWeight);
 								// update the predecessor list for successor
-								
-								//CAN'T DO THIS, ADDS EVERY PATH TO THE LIST
-								//NEED TO RECONSTRUCT PATH BASED ON PREDECESSORS
+								weight[childID] = tempWeight;
+								//Add current as the predecessor for the child
 								predecessor[childID] = curr.getLocation();
 								
 								
-								//if successor is in queue, just update total weight
 								if(!dpq.contains(successor)){
-									System.out.println("successor:" + successor.getLocation().toString());
+									//System.out.println("successor:" + successor.getLocation().toString());
 									dpq.add(successor);
 									//System.out.println("added once");
 								}
+								
+								//if successor is in queue, just update total weight
+								
 							}	
 						}
 					}
-				}	
-				 else{
+				//}
+				}		
+				
 				
 		//src and dest
 				
 		//Construct list of paths from predecessors
 		List<Path> boi = new ArrayList<Path>();
 		List<Path> reverseBoi = new ArrayList<Path>();
-		int destID = 0;
-		Location destination = dest;
-		Location source;
+		int destID = 8;
+		Location destination = null;
+		Location source = null;
 		boolean done = false;
 		while (!done) {
 			
-			for (int count = 0; count < predecessor.length; count++) {
-				if (destination.equals(predecessor[count])) {
+			if (destination == null) {
+				destination = dest;
+			}
+			for (int count = 0; count < locations.size(); count++) {
+				if (destination.equals(locations.get(count))) {
 					destID = count;
 				}
 			}
@@ -239,18 +262,16 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 		}
 		//Return forward list of paths
 		return reverseBoi;
-				}	
-	} return null;
-	}
-
+					
 	
+}
 	
 	
 	public String[] getEdgePropertyNames() {
 		return this.edgePropertyNames;
 	}
 	
-
+	@Override
 	public String toString() {
 		String out = "";
 		for (int i = 0; i < nodes.size(); i++) {
@@ -279,5 +300,42 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 		//if not found, return null
 		return null;  
 	}
-
+	public class DijkstraPQEntry<V>{
+		private double weight;
+		private V location;
+		
+		public DijkstraPQEntry(double totalWeight, V name){
+			this.weight = totalWeight;
+			this.location = name;
+			
+		}
+		
+		public int compareTo(DijkstraPQEntry<V> other) {
+			if(this.getLocation() == other.getLocation()){
+				return 0;
+			}
+			if (this.weight < other.getWeight()) {
+				return -1;
+			}
+			else if (this.weight == other.getWeight()) {
+				return 0;
+			}
+			else {
+				return 1;
+			}
+		}
+		
+		public void setWeight(double number){
+			this.weight = number;
+		}
+		public void setLocation (V name){
+			this.location = name;
+		}
+		public double getWeight(){
+			return this.weight;
+		}
+		public V getLocation(){
+			return this.location;
+	}
+	}
 }
