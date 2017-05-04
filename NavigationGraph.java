@@ -8,8 +8,8 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	private List<Location> locations = new ArrayList<Location>();
 	
 	//priority queue for Dijkstra's 
-		private PriorityQueue<DijkstraPQEntry> dpq = new 
-	PriorityQueue<DijkstraPQEntry>();
+		private PriorityQueue<DijkstraPQEntry<Location>> dpq = new 
+	PriorityQueue<DijkstraPQEntry<Location>>();
 		
 		// visited table for Dijkstra's 
 		private boolean[] visited = new boolean[100];
@@ -102,7 +102,14 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	public List<Location> getNeighbors(Location vertex) {
 		//Returns the locations that this location is connected to
 		//Return the locations within the edge list associated with this location
-		return null;
+		List<Location> temp = new ArrayList<Location>();
+		for (int i = 0; i < nodes.size(); i++) {
+			GraphNode<Location, Path> node = nodes.get(i);
+			for (int j = 0; j < nodes.get(i).getOutEdges().size(); j++) {
+				temp.add(node.getOutEdges().get(j).getDestination());
+			}
+		}
+		return temp;
 	}
 	
 	@Override
@@ -123,10 +130,14 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 					this.weight[i] = MAX_VALUE;
 				}
 				int srcIndex = 0;
-				//Get graph node with from the locations maybe not
+				//Get graph node location index with from the locations maybe not
 				if (locations.contains(src)){
 					srcIndex = locations.indexOf(src);
-				} // else its an error
+				} else{
+					return null;
+				}
+				
+				//Set source's weight to zero
 				weight[srcIndex] = 0;
 				
 				//ANYTHING TO DO WITH DijkstraPQEntry doesn't work
@@ -136,9 +147,14 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 				DijkstraPQEntry<Location> firstEntry = new DijkstraPQEntry<Location>(weight[srcIndex],src);
 				dpq.add(firstEntry);
 				
+				//CHANGE FROM INSIDE OF WHILE LOOP4
+				DijkstraPQEntry<Location> curr;
 				while(!dpq.isEmpty()){	
-					DijkstraPQEntry<Location> curr;
+					
 					curr = dpq.remove();
+					
+					// curr is not changing for whatever reason
+					System.out.println(curr.getLocation().toString());
 					
 					int currIndex = 0;
 					for (int count = 0; count < locations.size(); count++) {
@@ -146,11 +162,22 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 							currIndex = count;
 						}
 					}
+					
+					//Set current node's index to true
 					visited[currIndex] = true;
 					
 					
 					// find unvisited successors
-					GraphNode<Location,Path> currN = nodes.get(locations.indexOf(curr.getLocation()));	
+					//System.out.println("index of currN in nodes: " + locations.indexOf(curr.getLocation()));
+					// The list is returning null because our currN isn't in location, so if the location is in there, do something
+					// if its not, then we need to find another successor or end the process
+					GraphNode<Location,Path> currN;
+					//if ( locations.indexOf(curr.getLocation()) > 0){
+					
+					currN = nodes.get(currIndex);
+					
+					
+					//Check each successor of the current node
 					for( int i = 0; i < currN.getOutEdges().size(); i++){
 						// Predecessor list
 						Path childPath = currN.getOutEdges().get(i);//get Child Path
@@ -170,23 +197,31 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 							// tempWeight is the potential new weight that needs to be compared to the old weight
 							double tempWeight = successor.getWeight() + curr.getWeight();
 							// if the new weight is less then the old weight, update the weight
-							if (tempWeight <= successor.getWeight()){ 
+						
+							
+							
+							if (tempWeight <= weight[childID]){ 
 								successor.setWeight(tempWeight);
 								// update the predecessor list for successor
-								
-								//CAN'T DO THIS, ADDS EVERY PATH TO THE LIST
-								//NEED TO RECONSTRUCT PATH BASED ON PREDECESSORS
+								weight[childID] = tempWeight;
+								//Add current as the predecessor for the child
 								predecessor[childID] = curr.getLocation();
 								
 								
-								//if successor is in queue, just update total weight
 								if(!dpq.contains(successor)){
+									System.out.println("successor:" + successor.getLocation().toString());
 									dpq.add(successor);
+									//System.out.println("added once");
 								}
+								
+								//if successor is in queue, just update total weight
+								
 							}	
 						}
 					}
-				}	
+				//}
+				}		
+				
 				
 		//src and dest
 				
@@ -226,8 +261,9 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 		}
 		//Return forward list of paths
 		return reverseBoi;
-		
-	}
+					
+	
+}
 	
 	@Override
 	public String[] getEdgePropertyNames() {
