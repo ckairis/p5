@@ -1,23 +1,38 @@
 
-public class DijkstraPQEntry {
+
+public class DijkstraPQEntry<V> implements Comparable<DijkstraPQEntry<V>> {
 	private double weight;
-	private Location location;
+	private V location;
 	
-	public DijkstraPQEntry(double totalWeight, Location name){
+	public DijkstraPQEntry(double totalWeight, V name){
 		this.weight = totalWeight;
 		this.location = name;
 		
 	}
+	
+	public int compareTo(DijkstraPQEntry<V> other) {
+		if (this.weight < other.getWeight()) {
+			return -1;
+		}
+		else if (this.weight == other.getWeight()) {
+			return 0;
+		}
+		else {
+			return 1;
+		}
+		
+	}
+	
 	public void setWeight(double number){
 		this.weight = number;
 	}
-	public void setLocation (Location name){
+	public void setLocation (V name){
 		this.location = name;
 	}
 	public double getWeight(){
 		return this.weight;
 	}
-	public Location getLocation(){
+	public V getLocation(){
 		return this.location;
-	}
+}
 }
