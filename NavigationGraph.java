@@ -144,7 +144,8 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 				//Most likely to do with Comparable implementation
 				//Consistent with piazza
 				
-				DijkstraPQEntry<Location> firstEntry = new DijkstraPQEntry<Location>(weight[srcIndex],src);
+				DijkstraPQEntry<Location> firstEntry = new 
+						DijkstraPQEntry<Location>(weight[srcIndex],src);
 				dpq.add(firstEntry);
 				
 				//CHANGE FROM INSIDE OF WHILE LOOP4
@@ -154,7 +155,7 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 					curr = dpq.remove();
 					
 					// curr is not changing for whatever reason
-					System.out.println(curr.getLocation().toString());
+					//System.out.println(curr.getLocation().toString());
 					
 					int currIndex = 0;
 					for (int count = 0; count < locations.size(); count++) {
@@ -209,7 +210,7 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 								
 								
 								if(!dpq.contains(successor)){
-									System.out.println("successor:" + successor.getLocation().toString());
+									//System.out.println("successor:" + successor.getLocation().toString());
 									dpq.add(successor);
 									//System.out.println("added once");
 								}
@@ -228,14 +229,17 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 		//Construct list of paths from predecessors
 		List<Path> boi = new ArrayList<Path>();
 		List<Path> reverseBoi = new ArrayList<Path>();
-		int destID = 0;
-		Location destination = dest;
-		Location source;
+		int destID = 8;
+		Location destination = null;
+		Location source = null;
 		boolean done = false;
 		while (!done) {
 			
-			for (int count = 0; count < predecessor.length; count++) {
-				if (destination.equals(predecessor[count])) {
+			if (destination == null) {
+				destination = dest;
+			}
+			for (int count = 0; count < locations.size(); count++) {
+				if (destination.equals(locations.get(count))) {
 					destID = count;
 				}
 			}
