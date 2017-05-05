@@ -183,10 +183,23 @@ public class MapApp {
 		Scanner scnr = new Scanner(file);
 		
 		String first = scnr.nextLine();
+		first = first.toLowerCase();
 		
 		//Parse out EdgeProperties for constructing NavGraph instance
 		String[] boi = first.split(" ");
-		String[] boi2 = new String[]{boi[2], boi[3]};
+		if (boi.length < 3) {
+			throw new InvalidFileException("Invalid File Format");
+		}
+		
+		//Create properties array
+		String[] boi2 = new String[boi.length -2];
+		int count = 0;
+		for (int i = 2; i < boi.length; i++) {
+				
+			boi2[count] = boi[i];
+			count++;
+		}
+		
 		
 		//Create NavGraph instance
 		NavigationGraph graph = new NavigationGraph(boi2);
@@ -194,6 +207,7 @@ public class MapApp {
 		//Parse remaining lines, create nodes and edges
 		while (scnr.hasNextLine()) {
 			String line = scnr.nextLine();
+			line = line.toLowerCase();
 			String[] data = line.split(" ");
 			
 			//Create location objects
@@ -202,8 +216,20 @@ public class MapApp {
 			
 			//Get edge properties
 			List<Double> list = new ArrayList<Double>();
-			list.add(Double.parseDouble(data[2]));
-			list.add(Double.parseDouble(data[3]));
+			for (int j = 2; j < data.length; j++) {
+				list.add(Double.parseDouble(data[j]));
+			}
+			
+			int propertySize = 0;
+			for (int random = 0; random < boi2.length; random++) {
+				if (boi2[random] != null) {
+					propertySize = propertySize +1;
+				}
+			}
+			
+			if (list.size() != boi2.length) {
+				throw new InvalidFileException("Invalid File Format");
+			}
 			
 			//Create path from source to destination
 			Path temp = new Path(source, dest, list);
