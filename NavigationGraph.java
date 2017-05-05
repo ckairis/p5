@@ -452,7 +452,16 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 		return null;  
 	}
 	
-	
+			/**
+		 *The wrapper class for the getShortest method. Allows for us to create
+		 *a comparable class for use in the dijkstra method of determining the 
+		 *the shortest path
+		 *
+		 *
+		 * <p>Bugs: None Known
+		 *
+		 * @author Tyler Davis Cody Kairis
+		 */
 	class DijkstraPQEntry<V> implements Comparable<DijkstraPQEntry<V>> {
 		private double weight;
 		private V location;
@@ -462,7 +471,7 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 			this.location = name;
 
 		}
-
+		
 		public int compareTo(DijkstraPQEntry<V> other) {
 			if(this.getLocation() == other.getLocation()){
 				return 0;
