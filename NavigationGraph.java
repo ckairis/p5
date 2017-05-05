@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // Semester:         CS367 Spring 2016 
 // PROJECT:          p5
-// FILE:             Navigation Graph
+// FILE:             NavigationGraph.java
 //
 // TEAM:    Team 56
 // Authors: Tyler Davis and Cody Kairis
@@ -53,6 +53,10 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	 *            vertex to be added
 	 */
 	public void addVertex(Location vertex) {
+		if (vertex == null) {
+			throw new IllegalArgumentException("Illegal Argument");
+		}
+		
 		//Check if location exists in list already
 		for (int i=0; i < locations.size(); i++) {
 			if (vertex.equals(locations.get(i))) {
@@ -75,6 +79,16 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	 *            edge between src and dest
 	 */
 	public void addEdge(Location src, Location dest, Path edge) {
+		if (src == null || dest == null) {
+			throw new IllegalArgumentException("Illegal Argument");
+		}
+		if(src == dest){
+			throw new IllegalArgumentException("Illegal Argument");
+		}
+		if (edge == null) {
+			throw new IllegalArgumentException("Illegal Argument");
+		}
+		
 		for (int i= 0; i < nodes.size(); i++) {
 
 			//Find source within list of GraphNodes
@@ -102,10 +116,19 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	 *            Source vertex
 	 * @param dest
 	 *            Destination vertex
+	 * @throws IllegalArgumentException
+	 * 
 	 * @return Edge of type E from src to dest
 	 */
 	public Path getEdgeIfExists(Location src, Location dest) {
 
+		if (src == null || dest == null) {
+			throw new IllegalArgumentException("Illegal Argument");
+		}
+		if(src == dest){
+			throw new IllegalArgumentException("Illegal Argument");
+		}
+		
 		GraphNode<Location,Path> temp = null;
 
 		for (int i=0; i < nodes.size(); i++) {
@@ -126,9 +149,17 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	 * 
 	 * @param src
 	 *            Source vertex for which the outgoing edges need to be obtained
+	 * 
+	 * @throws IllegalArgumentException           
+	 *            
 	 * @return List of edges of type E
 	 */
 	public List<Path> getOutEdges(Location src) {
+		if (src == null) {
+			throw new IllegalArgumentException("Illegal Argument");
+		}
+		
+		
 		List<Path> temp = null;
 		for (int i= 0; i < nodes.size(); i++) {
 			if (nodes.get(i).getVertexData().equals(src)) {
@@ -147,20 +178,19 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	 * 
 	 * @param vertex
 	 *            vertex for which the neighbors are required
+	 *            
+	 * @throws IllegalArgumentException           
+	 *            
 	 * @return List of vertices(neighbors) of type V
 	 */
 	public List<Location> getNeighbors(Location vertex) {
 		//Returns the locations that this location is connected to
 		//Return the locations within the edge list associated with this location
 		if ( vertex == null){
-			System.out.println("Not a valid location");
-			List<Location> empty = new ArrayList<Location>();
-			return empty;
+			throw new IllegalArgumentException("Illegal Argument");
 		}
 		if( nodes.get(nodes.indexOf(vertex)).getOutEdges().isEmpty()){
-			System.out.println( vertex.getName()+ " is not a valid location");
-			List<Location> empty = new ArrayList<Location>();
-			return empty;
+			throw new IllegalArgumentException("Illegal Argument");
 		}
 		List<Location> temp = new ArrayList<Location>();
 		for (int i = 0; i < nodes.size(); i++) {
@@ -182,20 +212,22 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	 *            Destination vertex to which the shortest route is desired
 	 * @param edgePropertyName
 	 *            edge property by which shortest route has to be calculated
+	 *            
+	 * @throws IllegalArgumentException           
+	 *            
 	 * @return List of edges that denote the shortest route by edgePropertyName
 	 */
 	public List<Path> getShortestRoute(Location src, Location dest,
 			String edgePropertyName) {
 		// error handling stuff
 		if (src == null || dest == null) {
-			System.out.println(" Source and/or destinastion not valid Locations in the graph");
-			List<Path> empty = new ArrayList<Path>();
-			return empty;
+			throw new IllegalArgumentException("Illegal Argument");
 		}
 		if(src == dest){
-			System.out.println("Location and destination are the same");
-			List<Path> empty = new ArrayList<Path>();
-			return empty;
+			throw new IllegalArgumentException("Illegal Argument");
+		}
+		if (edgePropertyName == null) {
+			throw new IllegalArgumentException("Illegal Argument");
 		}
 		// if index of edgeProperty name doesn't work
 		/*for (int i = 0; i < this.edgePropertyNames.length; i++){
@@ -397,10 +429,16 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	 * 
 	 * @param name
 	 *            name of the location
+	 *            
+	 * @throws IllegalArgumentException            
+	 *            
 	 * @return Location object
 	 */
 	public Location getLocationByName(String name) {
 		//TODO: implement correctly.
+		if (name == null) {
+			throw new IllegalArgumentException("Illegal Argument");
+		}
 		Location temp = new Location(name);
 
 		for (int i=0; i < locations.size(); i++) {
@@ -413,7 +451,9 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 		//if not found, return null
 		return null;  
 	}
-	class DijkstraPQEntry<V>{
+	
+	
+	class DijkstraPQEntry<V> implements Comparable<DijkstraPQEntry<V>> {
 		private double weight;
 		private V location;
 
