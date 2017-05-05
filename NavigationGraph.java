@@ -274,13 +274,18 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 		return this.edgePropertyNames;
 	}
 	
-	@Override
 	public String toString() {
 		String out = "";
 		for (int i = 0; i < nodes.size(); i++) {
-			out = out+ nodes.get(i).toString() + "\n";
-		}
+			for (int j = 0; j < nodes.get(i).getOutEdges().size(); j++) {
+				out = out + nodes.get(i).getOutEdges().get(j).toString()
+						+ ",";
+			}	
+			out = out + "\n";
+		} 
 		return out;
+		
+		
 	}
 	/**
 	 * Returns a Location object given its name
